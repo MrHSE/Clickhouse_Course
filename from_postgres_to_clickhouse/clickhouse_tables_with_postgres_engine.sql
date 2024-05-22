@@ -42,6 +42,32 @@ CREATE TABLE manager (
 ;
 
 SELECT
+  company.companyid, department.departmentid, COUNT(person.personid),
+  SUM(CASE
+    WHEN manager.managerid != 0 THEN 1
+    ELSE 0
+  END) AS grade
+FROM company
+LEFT JOIN companydepartment ON company.companyid = companydepartment.companyid
+LEFT JOIN department ON department.departmentid = companydepartment.departmentid
+LEFT JOIN person ON person.companyid = company.companyid
+LEFT JOIN employee ON employee.personid = person.personid
+LEFT JOIN manager ON manager.personid = person.personid
+GROUP BY (company.companyid, department.departmentid)
+;
+
+--    ┌─company.companyid─┬─department.departmentid─┬─COUNT(person.personid)─┬─grade─┐
+-- 1. │                14 │                       2 │                     20 │     2 │
+-- 2. │                15 │                       1 │                     20 │     2 │
+-- 3. │                15 │                       2 │                     20 │     2 │
+-- 4. │                14 │                       1 │                     20 │     2 │
+-- 5. │                16 │                       2 │                     20 │     2 │
+-- 6. │                13 │                       1 │                     20 │     2 │
+-- 7. │                13 │                       2 │                     20 │     2 │
+-- 8. │                16 │                       1 │                     20 │     2 │
+--    └───────────────────┴─────────────────────────┴────────────────────────┴───────┘
+
+SELECT
   company.name, department.name, department.description,
   person.name, person.surname, employee.position, person.socialsecurityid,
   CASE
