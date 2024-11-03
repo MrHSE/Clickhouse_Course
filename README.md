@@ -1,2 +1,2 @@
 # Clickhouse_Course
-![](click.png)
+![](./click.png)
